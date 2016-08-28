@@ -1,8 +1,12 @@
 <?php 
-/** 
-  * create by eclipse
-  * @autour gengkang
-  */
+$opt = getopt("t:");
+$tableName = '';
+if (isset($opt['t']) && $opt['t']) {
+    $tableName = $opt['t'];
+} else {
+    die("请加参数：-t=tablename\n");
+}
+
 
 // 数据库配置参数
 $db_config = array(
@@ -14,21 +18,12 @@ $db_config = array(
     'charset' => 'utf8'
 );
 
-
-$opt = getopt("t:");
-$tableName = '';
-if (isset($opt['t']) && $opt['t']) {
-    $tableName = $opt['t'];
-} else {
-    die("请加参数：-t=tablename\n");
-}
-
 $res = linkdb($db_config, $tableName);
 
 $className = getCamelName($tableName) . 'Bean';
 $fileName = $className . '.php';
 $annStr = addAnnotation($fileName, $tableName, 'javabean');
-$classStr = readTableStr($res, $className,$annStr);
+$classStr = readTableStr($res, $className, $tableName,$annStr);
 // 写入文件
 $file = fopen($fileName, "w+");
 fwrite($file, $classStr);
@@ -40,11 +35,13 @@ fclose($file);
  * @param unknown $className            
  * @return string
  */
-function readTableStr($res, $className, $annStr='')
+function readTableStr($res, $className, $table, $annStr='')
 {
     $result = '<?php ' . "\n";
     $result .= $annStr;
-    $result .= "class $className {\n";
+    $result .= "class $className extends Model{\n";
+    $result .= "\n    protected \$table = '{$table}'; //表名";
+    
     // 变量
     foreach ($res as $v) {
         if (is_int($v['Default'])) {
