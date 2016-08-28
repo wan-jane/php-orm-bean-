@@ -59,7 +59,7 @@ function readTableStr($res, $className, $annStr='')
         $result .= "\n     public function set" . getCamelName($v['Field']) . '($' . $v['Field'] . ") {";
         $result .= "\n" . '        $this->' . $v['Field'] . ' = $' . $v['Field'] . ";";
         $result .= "\n     }";
-        $result .= "\n     public function get" . $v['Field'] . '() {';
+        $result .= "\n     public function get" . getCamelName($v['Field']) . '() {';
         $result .= "\n" . '        return $this->' . $v['Field'] . ";";
         $result .= "\n     }";
         $result .= "\n";
